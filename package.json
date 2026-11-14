@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:lexer": "tsx scripts/probar-lexer.ts"
+    "test:lexer": "tsx scripts/probar-lexer.ts",
+    "test:semantico": "tsx scripts/probar-semantico.ts",
+    "test:intermedio": "tsx scripts/probar-codigo-intermedio.ts"
   },
   "dependencies": {
     "@codemirror/lang-cpp": "^6.0.3",

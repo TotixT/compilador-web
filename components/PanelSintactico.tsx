@@ -9,7 +9,7 @@ interface Props {
 
 export default function PanelSintactico({ resultado }: Props) {
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full min-h-0">
       <div className="bg-slate-800 text-slate-100 px-4 py-2 text-sm font-semibold rounded-t-lg">
         3. Análisis sintáctico
       </div>
@@ -53,36 +53,6 @@ export default function PanelSintactico({ resultado }: Props) {
                   Árbol sintáctico
                 </h3>
                 <ArbolSintactico arbol={resultado.arbol} />
-              </div>
-            )}
-
-            {resultado.tablaSimbolos.listar().length > 0 && (
-              <div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase mb-1">
-                  Tabla de símbolos
-                </h3>
-                <table className="w-full text-xs border border-slate-200 text-slate-800">
-                  <thead className="bg-slate-100 text-slate-700">
-                    <tr>
-                      <th className="text-left px-2 py-1 border-b border-slate-200 font-semibold">Nombre</th>
-                      <th className="text-left px-2 py-1 border-b border-slate-200 font-semibold">Tipo</th>
-                      <th className="text-left px-2 py-1 border-b border-slate-200 font-semibold">Arreglo</th>
-                      <th className="text-left px-2 py-1 border-b border-slate-200 font-semibold">Línea</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-slate-800">
-                    {resultado.tablaSimbolos.listar().map((simbolo) => (
-                      <tr key={simbolo.nombre} className="odd:bg-white even:bg-slate-50">
-                        <td className="px-2 py-1 font-mono">{simbolo.nombre}</td>
-                        <td className="px-2 py-1">{simbolo.tipoDato}</td>
-                        <td className="px-2 py-1">
-                          {simbolo.esArreglo ? `sí [${simbolo.tamanoArreglo}]` : "no"}
-                        </td>
-                        <td className="px-2 py-1">{simbolo.lineaDeclaracion}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
             )}
           </>

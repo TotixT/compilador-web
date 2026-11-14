@@ -26,6 +26,7 @@ export default function ConfiguracionPage() {
   const [pestañaActiva, setPestañaActiva] = useState<"tabla1" | "tabla2">("tabla1");
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- carga inicial desde localStorage, es el uso que React documenta como válido
     setConfig(cargarConfiguracion());
   }, []);
 

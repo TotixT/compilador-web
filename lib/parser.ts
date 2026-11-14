@@ -1,5 +1,4 @@
 import { Token } from "./types";
-import { TablaSimbolos } from "./tablaSimbolos";
 
 // ---------------------------------------------------------------------------
 // GRAMÁTICA (notación BNF simplificada) que reconoce este parser:
@@ -28,6 +27,8 @@ export interface NodoAST {
   tipo: string; // nombre de la regla gramatical, o "token" si es una hoja
   valor?: string; // lexema, solo para hojas
   linea?: number;
+  columna?: number;
+  tamano?: number; // solo en declaradores de arreglo
   hijos?: NodoAST[];
 }
 
@@ -41,7 +42,6 @@ export interface ResultadoParser {
   arbol: NodoAST | null;
   errores: ErrorSintactico[];
   valido: boolean;
-  tablaSimbolos: TablaSimbolos;
 }
 
 const TIPOS_DATO = new Set(["int", "char", "float", "double", "void", "long", "short"]);
@@ -53,7 +53,6 @@ class Parser {
   private tokens: Token[];
   private pos = 0;
   public errores: ErrorSintactico[] = [];
-  public tabla = new TablaSimbolos();
 
   constructor(tokens: Token[]) {
     this.tokens = tokens;
@@ -215,24 +214,25 @@ class Parser {
       throw new ErrorDeSincronizacion();
     }
 
-    const declaradores: NodoAST[] = [this.parseDeclarador(tipoTok.lexema)];
+    const declaradores: NodoAST[] = [this.parseDeclarador()];
 
     while (this.coincideLexema(",")) {
       this.avanzar();
-      declaradores.push(this.parseDeclarador(tipoTok.lexema));
+      declaradores.push(this.parseDeclarador());
     }
 
     this.esperarLexema(";");
 
     const hijos: NodoAST[] = [];
     if (calificadorTok) {
-      hijos.push({ tipo: "token", valor: calificadorTok.lexema, linea: calificadorTok.linea });
+      hijos.push({ tipo: "token", valor: calificadorTok.lexema, linea: calificadorTok.linea, columna: calificadorTok.columna });
     }
-    hijos.push({ tipo: "token", valor: tipoTok.lexema, linea: tipoTok.linea }, ...declaradores);
+    hijos.push({ tipo: "token", valor: tipoTok.lexema, linea: tipoTok.linea, columna: tipoTok.columna }, ...declaradores);
 
     return {
       tipo: "declaracion",
       linea: (calificadorTok ?? tipoTok).linea,
+      columna: (calificadorTok ?? tipoTok).columna,
       hijos,
     };
   }
@@ -246,28 +246,14 @@ class Parser {
 
     const tipoInferido = this.inferirTipo(expr);
 
-    const resultado = this.tabla.declarar({
-      nombre: idTok.lexema,
-      tipoDato: tipoInferido,
-      esArreglo: false,
-      lineaDeclaracion: idTok.linea,
-    });
-
-    if (!resultado.exito) {
-      this.errores.push({
-        mensaje: `La variable "${idTok.lexema}" ya había sido declarada en la línea ${resultado.yaExistia?.lineaDeclaracion}`,
-        linea: idTok.linea,
-        columna: idTok.columna,
-      });
-    }
-
     return {
       tipo: "declaracion_inferida",
       linea: constTok.linea,
+      columna: constTok.columna,
       hijos: [
-        { tipo: "token", valor: "const", linea: constTok.linea },
-        { tipo: "token", valor: idTok.lexema, linea: idTok.linea },
-        { tipo: "token", valor: `(tipo inferido: ${tipoInferido})`, linea: idTok.linea },
+        { tipo: "token", valor: "const", linea: constTok.linea, columna: constTok.columna },
+        { tipo: "token", valor: idTok.lexema, linea: idTok.linea, columna: idTok.columna },
+        { tipo: "token", valor: `(tipo inferido: ${tipoInferido})`, linea: idTok.linea, columna: idTok.columna },
         expr,
       ],
     };
@@ -281,7 +267,7 @@ class Parser {
     return "inferido";
   }
 
-  private parseDeclarador(tipoDato: string): NodoAST {
+  private parseDeclarador(): NodoAST {
     const idTok = this.esperarCategoria("identificador", "un identificador");
     let esArreglo = false;
     let tamano: number | undefined;
@@ -294,28 +280,14 @@ class Parser {
       esArreglo = true;
     }
 
-    const resultado = this.tabla.declarar({
-      nombre: idTok.lexema,
-      tipoDato,
-      esArreglo,
-      tamanoArreglo: tamano,
-      lineaDeclaracion: idTok.linea,
-    });
-
-    if (!resultado.exito) {
-      this.errores.push({
-        mensaje: `La variable "${idTok.lexema}" ya había sido declarada en la línea ${resultado.yaExistia?.lineaDeclaracion}`,
-        linea: idTok.linea,
-        columna: idTok.columna,
-      });
-    }
-
     return {
       tipo: "declarador",
       valor: idTok.lexema,
       linea: idTok.linea,
+      columna: idTok.columna,
+      tamano: esArreglo ? tamano : undefined,
       hijos: esArreglo
-        ? [{ tipo: "token", valor: `[${tamano}]`, linea: idTok.linea }]
+        ? [{ tipo: "token", valor: `[${tamano}]`, linea: idTok.linea, columna: idTok.columna }]
         : undefined,
     };
   }
@@ -334,11 +306,11 @@ class Parser {
     const expr = this.parseExpresion();
     this.esperarLexema(";");
 
-    const hijos: NodoAST[] = [{ tipo: "token", valor: idTok.lexema, linea: idTok.linea }];
+    const hijos: NodoAST[] = [{ tipo: "token", valor: idTok.lexema, linea: idTok.linea, columna: idTok.columna }];
     if (indice) hijos.push({ tipo: "indice", hijos: [indice] });
     hijos.push(expr);
 
-    return { tipo: "asignacion", linea: idTok.linea, hijos };
+    return { tipo: "asignacion", linea: idTok.linea, columna: idTok.columna, hijos };
   }
 
   private parseSentenciaIf(): NodoAST {
@@ -354,7 +326,7 @@ class Parser {
       hijos.push(this.parseBloque());
     }
 
-    return { tipo: "sentencia_if", linea: ifTok.linea, hijos };
+    return { tipo: "sentencia_if", linea: ifTok.linea, columna: ifTok.columna, hijos };
   }
 
   private parseSentenciaWhile(): NodoAST {
@@ -363,7 +335,7 @@ class Parser {
     const cond = this.parseExpresion();
     this.esperarLexema(")");
     const cuerpo = this.parseBloque();
-    return { tipo: "sentencia_while", linea: whileTok.linea, hijos: [cond, cuerpo] };
+    return { tipo: "sentencia_while", linea: whileTok.linea, columna: whileTok.columna, hijos: [cond, cuerpo] };
   }
 
   private parseBloque(): NodoAST {
@@ -373,7 +345,7 @@ class Parser {
       this.intentarSentencia(hijos);
     }
     this.esperarLexema("}");
-    return { tipo: "bloque", linea: abre.linea, hijos };
+    return { tipo: "bloque", linea: abre.linea, columna: abre.columna, hijos };
   }
 
   private parseLlamada(): NodoAST {
@@ -401,6 +373,7 @@ class Parser {
       tipo: "llamada",
       valor: nombreCompleto,
       linea: idTok.linea,
+      columna: idTok.columna,
       hijos: argumentos,
     };
   }
@@ -416,7 +389,7 @@ class Parser {
     while (this.coincideLexema("||")) {
       const op = this.avanzar()!;
       const der = this.parseExpAnd();
-      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, hijos: [izq, der] };
+      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, columna: op.columna, hijos: [izq, der] };
     }
     return izq;
   }
@@ -426,7 +399,7 @@ class Parser {
     while (this.coincideLexema("&&")) {
       const op = this.avanzar()!;
       const der = this.parseExpRel();
-      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, hijos: [izq, der] };
+      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, columna: op.columna, hijos: [izq, der] };
     }
     return izq;
   }
@@ -436,7 +409,7 @@ class Parser {
     if (this.coincideCategoria("operador_relacional")) {
       const op = this.avanzar()!;
       const der = this.parseExpAdd();
-      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, hijos: [izq, der] };
+      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, columna: op.columna, hijos: [izq, der] };
     }
     return izq;
   }
@@ -446,7 +419,7 @@ class Parser {
     while (this.coincideLexema("+", "-")) {
       const op = this.avanzar()!;
       const der = this.parseExpMul();
-      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, hijos: [izq, der] };
+      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, columna: op.columna, hijos: [izq, der] };
     }
     return izq;
   }
@@ -456,7 +429,7 @@ class Parser {
     while (this.coincideLexema("*", "/", "%")) {
       const op = this.avanzar()!;
       const der = this.parseFactor();
-      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, hijos: [izq, der] };
+      izq = { tipo: "operacion", valor: op.lexema, linea: op.linea, columna: op.columna, hijos: [izq, der] };
     }
     return izq;
   }
@@ -472,7 +445,7 @@ class Parser {
     if (t.lexema === "!") {
       this.avanzar();
       const operando = this.parseFactor();
-      return { tipo: "operacion", valor: "!", linea: t.linea, hijos: [operando] };
+      return { tipo: "operacion", valor: "!", linea: t.linea, columna: t.columna, hijos: [operando] };
     }
 
     if (t.lexema === "(") {
@@ -484,12 +457,12 @@ class Parser {
 
     if (t.categoria === "numero_entero" || t.categoria === "numero_decimal") {
       this.avanzar();
-      return { tipo: t.categoria, valor: t.lexema, linea: t.linea };
+      return { tipo: t.categoria, valor: t.lexema, linea: t.linea, columna: t.columna };
     }
 
     if (t.categoria === "cadena") {
       this.avanzar();
-      return { tipo: "cadena", valor: t.lexema, linea: t.linea };
+      return { tipo: "cadena", valor: t.lexema, linea: t.linea, columna: t.columna };
     }
 
     if (t.categoria === "identificador") {
@@ -502,9 +475,9 @@ class Parser {
         this.avanzar();
         const indice = this.parseExpresion();
         this.esperarLexema("]");
-        return { tipo: "acceso_arreglo", valor: t.lexema, linea: t.linea, hijos: [indice] };
+        return { tipo: "acceso_arreglo", valor: t.lexema, linea: t.linea, columna: t.columna, hijos: [indice] };
       }
-      return { tipo: "identificador", valor: t.lexema, linea: t.linea };
+      return { tipo: "identificador", valor: t.lexema, linea: t.linea, columna: t.columna };
     }
 
     this.registrarError(`Token inesperado "${t.lexema}" dentro de una expresión`);
@@ -524,6 +497,5 @@ export function analizarSintaxis(tokens: Token[]): ResultadoParser {
     arbol,
     errores: parser.errores,
     valido: parser.errores.length === 0,
-    tablaSimbolos: parser.tabla,
   };
 }
