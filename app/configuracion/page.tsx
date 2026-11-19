@@ -1,7 +1,9 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 "use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import PieAutoria from "@/components/PieAutoria";
 import { ConfiguracionLexica, EntradaTabla1 } from "@/lib/configuracionLexica";
 import {
   cargarConfiguracion,
@@ -316,6 +318,8 @@ export default function ConfiguracionPage() {
         </table>
       </section>
       )}
+
+      <PieAutoria />
     </main>
   );
 }

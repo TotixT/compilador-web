@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 import { Token } from "./types";
 import { ConfiguracionLexica, CONFIGURACION_POR_DEFECTO } from "./configuracionLexica";
 

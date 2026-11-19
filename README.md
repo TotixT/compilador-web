@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Compilador Web
 
-## Getting Started
+Compilador didáctico que corre en el navegador. Recibe un programa fuente y muestra,
+etapa por etapa, el análisis léxico, el análisis sintáctico (con árbol), el análisis
+semántico (con tabla de símbolos) y la generación de código intermedio (código de
+tres direcciones).
 
-First, run the development server:
+Proyecto de Compiladores, Universitaria Tecnológica de Santander.
+
+**Autores:** Santiago López García y Oscar Julián Mojica Calderón.
+
+## Requisitos
+
+- Node.js 20.9 o superior (recomendado: la versión LTS), que incluye npm.
+- Un navegador actualizado.
+
+## Puesta en marcha
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install      # solo la primera vez
+npm run dev      # abre http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Comandos útiles
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run test:lexer        # prueba el análisis léxico desde la terminal
+npm run test:semantico    # prueba el análisis semántico
+npm run test:intermedio   # prueba el código intermedio
+npm run build             # compila la versión de producción
+npm start                 # sirve la versión de producción
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Para probar otro código con los comandos `test:*`, edita la variable `codigo` del
+archivo correspondiente en la carpeta `scripts/`.
 
-## Learn More
+## Estructura
 
-To learn more about Next.js, take a look at the following resources:
+- `lib/`: la lógica del compilador (lexer, parser, semántico, código intermedio, tabla de símbolos).
+- `components/`: las cajas visuales.
+- `app/`: las páginas (el compilador y la configuración léxica).
+- `scripts/`: pruebas por terminal.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Autoría y licencia
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Este software es de uso académico y educativo. Los créditos de autoría (encabezado, pie
+de página, título de la pestaña y avisos de cada archivo) deben conservarse; ver el archivo
+[LICENSE](./LICENSE). El compilador verifica que los créditos estén intactos y visibles, y
+bloquea el botón Compilar si se modifican o se ocultan.

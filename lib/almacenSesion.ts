@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 const CLAVE_CODIGO = "compilador-web:codigo-fuente";
 const CLAVE_SE_COMPILO = "compilador-web:se-compilo";
 

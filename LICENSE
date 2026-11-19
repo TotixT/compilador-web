@@ -1,0 +1,28 @@
+Compilador Web
+Copyright (c) 2026 Santiago López García y Oscar Julián Mojica Calderón
+Proyecto de Compiladores, Universitaria Tecnológica de Santander.
+Todos los derechos reservados.
+
+Los autores conceden, a quien reciba este software, un permiso limitado, no
+exclusivo e intransferible para USO ACADÉMICO Y EDUCATIVO: ejecutarlo, estudiarlo
+y mostrarlo en clase, bajo las siguientes condiciones:
+
+1. Atribución. Los avisos de autoría deben conservarse sin modificar en todas
+   las copias y en toda presentación del software: el bloque de autores del
+   encabezado, el pie de página, el título de la pestaña, los avisos al inicio de
+   los archivos de código, este archivo (LICENSE) y los datos de autor de
+   package.json. Quitar, ocultar o alterar esos avisos, o eludir su verificación,
+   incumple esta licencia.
+
+2. Sin redistribución ni uso comercial. No se permite publicar, vender,
+   sublicenciar ni redistribuir el software, completo o en partes, ni presentarlo
+   como obra propia, sin autorización escrita de los autores.
+
+3. Obras derivadas. Cualquier trabajo derivado que se haga con autorización debe
+   conservar la atribución a los autores originales.
+
+4. Sin garantía. El software se entrega "tal cual", sin garantía de ningún tipo,
+   y los autores no se hacen responsables de daños derivados de su uso.
+
+Cualquier uso distinto de los permitidos requiere autorización previa y por
+escrito de los autores.

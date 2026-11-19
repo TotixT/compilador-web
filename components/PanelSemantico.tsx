@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 "use client";
 
 import { ResultadoSemantico } from "@/lib/semantico";
@@ -77,7 +78,7 @@ export default function PanelSemantico({ resultado, seEjecuto }: Props) {
                   <table className="w-full text-xs border border-slate-200 text-slate-800">
                     <thead className="bg-slate-100 text-slate-700">
                       <tr>
-                        {["N°", "Nombre", "Dirección", "Tipo", "Valor", "Línea decl.", "Líneas ref.", "Ámbito"].map(
+                        {["N°", "Nombre", "Dirección", "Tipo", "Valor constante", "Línea decl.", "Líneas ref.", "Ámbito"].map(
                           (titulo) => (
                             <th
                               key={titulo}

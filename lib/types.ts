@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 export type TokenCategory =
   | "palabra_reservada"
   | "identificador"

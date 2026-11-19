@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 "use client";
 
 import { ResultadoParser } from "@/lib/parser";
@@ -31,7 +32,7 @@ export default function PanelSintactico({ resultado }: Props) {
             >
               {resultado.valido
                 ? "El orden de los tokens es válido"
-                : `Se encontraron ${resultado.errores.length} error(es) de sintaxis`}
+                : `Se encontraron ${resultado.errores.length} error(es) (léxicos o de sintaxis)`}
             </div>
 
             {resultado.errores.length > 0 && (

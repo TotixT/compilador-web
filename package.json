@@ -1,6 +1,9 @@
 {
   "name": "compilador-web",
   "version": "0.1.0",
+  "description": "Compilador web didáctico: análisis léxico, sintáctico, semántico y código intermedio. Proyecto de Compiladores, Universitaria Tecnológica de Santander.",
+  "author": "Santiago López García y Oscar Julián Mojica Calderón",
+  "license": "SEE LICENSE IN LICENSE",
   "private": true,
   "scripts": {
     "dev": "next dev",

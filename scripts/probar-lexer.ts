@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 // Script de prueba rápida del lexer.
 // Ejecutar con: npm run test:lexer
 // Edita el string `codigo` de abajo con lo que quieras probar.

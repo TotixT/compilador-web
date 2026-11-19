@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 import { Token } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -486,16 +487,29 @@ class Parser {
 }
 
 export function analizarSintaxis(tokens: Token[]): ResultadoParser {
-  // Los tokens "desconocido" ya se reportaron como error léxico;
-  // para el sintáctico los ignoramos para no duplicar el ruido.
+  // Los caracteres que el análisis léxico no reconoció (categoría "desconocido")
+  // son errores léxicos: se reportan aquí y se quitan del flujo para que el parser
+  // pueda seguir y encontrar también los errores de sintaxis que haya.
+  const erroresLexicos: ErrorSintactico[] = tokens
+    .filter((t) => t.categoria === "desconocido")
+    .map((t) => ({
+      mensaje: `Error léxico: el carácter "${t.lexema}" no pertenece al lenguaje (para reconocerlo, defínelo en Configuración léxica, Tabla 2)`,
+      linea: t.linea,
+      columna: t.columna,
+    }));
+
   const tokensValidos = tokens.filter((t) => t.categoria !== "desconocido");
 
   const parser = new Parser(tokensValidos);
   const arbol = parser.parsePrograma();
 
+  const errores = [...erroresLexicos, ...parser.errores].sort(
+    (a, b) => a.linea - b.linea || a.columna - b.columna
+  );
+
   return {
     arbol,
-    errores: parser.errores,
-    valido: parser.errores.length === 0,
+    errores,
+    valido: errores.length === 0,
   };
 }

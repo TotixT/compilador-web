@@ -1,3 +1,4 @@
+// © 2026 Santiago López García y Oscar Julián Mojica Calderón. Ver el archivo LICENSE.
 // Script de prueba manual del generador de código intermedio.
 // Ejecutar con: npm run test:intermedio
 // Edita el string `codigo` de abajo con lo que quieras probar.
